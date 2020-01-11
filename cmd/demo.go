@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/vault/shamir"
 	"github.com/spf13/cobra"
+	"github.com/xkortex/passcrux/common"
 	"github.com/xkortex/vprint"
 	"log"
 )
@@ -29,6 +30,11 @@ var demoCmd = &cobra.Command{
 		}
 		fmt.Println("Output:")
 		fmt.Println(shards)
+		settings := common.FormatSettings{
+			common.EncodeBase32,
+		}
+		out, err := common.FormatShards(shards, settings)
+		fmt.Println(out)
 		for _, v := range shards {
 			//fmt.Println(v)
 			fmt.Println(hex.EncodeToString(v))
