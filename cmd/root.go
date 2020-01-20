@@ -9,23 +9,20 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xkortex/vprint"
 	"log"
+	"os"
 )
-
-var developer string
 
 // RootCmd represents the root command
 var RootCmd = &cobra.Command{
 	Use:   "passcrux",
 	Short: "Utility for splitting passwords with Shamir's Secret Sharing",
-	Long: `Takes a password and splits it`,
+	Long:  `Takes a password and splits it`,
 	Run: func(cmd *cobra.Command, args []string) {
 		vprint.Print("root called")
 
 		vprint.Print(args)
-		ns, _ := cmd.PersistentFlags().GetString("namespace")
-		vprint.Print(ns)
-
-
+		_ = cmd.Help()
+		os.Exit(0)
 	},
 }
 
@@ -47,14 +44,16 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// RootCmd.PersistentFlags().String("foo", "", "A help for foo")
-	RootCmd.PersistentFlags().StringP("namespace", "n", "", "namespace of kv store")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	RootCmd.PersistentFlags().BoolP("silent", "s", false, "Suppress errors")
-	RootCmd.PersistentFlags().BoolP("stdin", "-", false, "Read from standard in")
-	RootCmd.Flags().BoolP("verbose", "v", false, "Verbose tracing (in progress)")
-	RootCmd.PersistentFlags().StringVar(&developer, "developer", "Unknown Developer!", "Developer name.")
+	RootCmd.PersistentFlags().BoolP("stdin", "p", false, "Read from standard in (pipe)")
+	RootCmd.PersistentFlags().BoolP("dummy", "d", false, "Testing")
+	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
+
+	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose tracing (in progress)")
+	//RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
 
 }
 

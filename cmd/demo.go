@@ -60,7 +60,7 @@ var demoCmd = &cobra.Command{
 					}
 
 					if !bytes.Equal(recomb, secret) {
-						fmt.Errorf("parts: (i:%d, j:%d, k:%d) %v", i, j, k, parts)
+						_ = fmt.Errorf("parts: (i:%d, j:%d, k:%d) %v", i, j, k, parts)
 						log.Fatalf("bad: %v %v", recomb, secret)
 					}
 				}
