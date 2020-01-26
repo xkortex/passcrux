@@ -36,9 +36,11 @@ import (
 // Encoding alphabet
 // x is dropped, despite being one of my favorite letters, to avoid ambiguity with hex
 // also J, Q, X and Z are least common letters in English
-const encodeStd = "aBcDeFgHkMnRtUwY"
+const encodeStd = "ABCDEFGHKMNRTUWY"
+const encodeAlt = "aBcDeFgHkMnRtUwY"
 
-var encodeSlice = []byte(strings.ToLower(encodeStd))
+var encodeSliceUpper = []byte(strings.ToUpper(encodeStd))
+var encodeSliceLower = []byte(strings.ToLower(encodeStd))
 
 // The rest is almost-verbatim the Go std hex encode lib, but with my custom alphabet
 
@@ -69,12 +71,14 @@ var ErrLength = errors.New("encoding/hex: odd length hex string")
 type InvalidByteError byte
 
 func (e InvalidByteError) Error() string {
-	return fmt.Sprintf("encoding/hex: invalid byte: %#U", rune(e))
+	return fmt.Sprintf("encoding/hex: invalid byte: %#U (%d)", rune(e), e)
 }
+
+//var Error = func (e InvalidByteError) string {return fmt.Sprintf("encoding/hex: invalid byte: %#U", rune(e))}
 
 // DecodedLen returns the length of a decoding of x source bytes.
 // Specifically, it returns x / 2.
-func DecodedLen(x int) int { return x / 2 }
+var DecodedLen = func(x int) int { return x / 2 }
 
 // Decode decodes src into DecodedLen(len(src)) bytes,
 // returning the actual number of bytes written to dst.
@@ -84,6 +88,7 @@ func DecodedLen(x int) int { return x / 2 }
 // If the input is malformed, Decode returns the number
 // of bytes decoded before the error.
 func Decode(dst, src []byte) (int, error) {
+	//var Decode = func (dst, src []byte) (int, error) {
 	i, j := 0, 1
 	for ; j < len(src); j += 2 {
 		a, ok := fromHexChar(src[j-1 : j])
@@ -110,11 +115,14 @@ func Decode(dst, src []byte) (int, error) {
 
 // fromHexChar converts a hex character into its value and a success flag.
 func fromHexChar(c []byte) (byte, bool) {
-	val := bytes.Index(encodeSlice, c)
+	val := bytes.Index(encodeSliceUpper, c)
 	if val >= 0 {
 		return byte(val), true
 	}
-
+	val = bytes.Index(encodeSliceLower, c)
+	if val >= 0 {
+		return byte(val), true
+	}
 	return 0, false
 }
 
@@ -132,7 +140,7 @@ func EncodeToString(src []byte) string {
 // If the input is malformed, DecodeString returns
 // the bytes decoded before the error.
 func DecodeString(s string) ([]byte, error) {
-	src := []byte(strings.ToLower(s))
+	src := []byte(s)
 	// We can use the source slice itself as the destination
 	// because the decode loop increments by one and then the 'seen' byte is not used anymore.
 	n, err := Decode(src, src)

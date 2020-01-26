@@ -16,12 +16,12 @@ type encDecTest struct {
 
 var encDecTests = []encDecTest{
 	{"", []byte{}},
-	{"aaaBacaDaeaFagaH", []byte{0, 1, 2, 3, 4, 5, 6, 7}},
-	{"akaManaRataUawaY", []byte{8, 9, 10, 11, 12, 13, 14, 15}},
-	{"YaYBYcYDYeYFYgYH", []byte{0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7}},
-	{"YkYMYnYRYtYUYwYY", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}},
-	{"gH", []byte{'g'}},
-	{"wDnB", []byte{0xe3, 0xa1}},
+	{"AAABACADAEAFAGAH", []byte{0, 1, 2, 3, 4, 5, 6, 7}},
+	{"AKAMANARATAUAWAY", []byte{8, 9, 10, 11, 12, 13, 14, 15}},
+	{"YAYBYCYDYEYFYGYH", []byte{0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7}},
+	{"YKYMYNYRYTYUYWYY", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}},
+	{"GH", []byte{'g'}},
+	{"WDNB", []byte{0xe3, 0xa1}},
 }
 
 func TestFromHexChar(t *testing.T) {
@@ -36,7 +36,6 @@ func TestFromHexChar(t *testing.T) {
 		}
 	}
 }
-
 
 func TestEncode(t *testing.T) {
 	for i, test := range encDecTests {
@@ -54,7 +53,7 @@ func TestEncode(t *testing.T) {
 func TestDecode(t *testing.T) {
 	// Case for decoding uppercase hex characters, since
 	// Encode always uses lowercase.
-	decTests := append(encDecTests, encDecTest{"YkYMYnYRYtYUYwYY", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}})
+	decTests := append(encDecTests, encDecTest{"YKYMYNYRYTYUYWYY", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}})
 	for i, test := range decTests {
 		dst := make([]byte, DecodedLen(len(test.enc)))
 		n, err := Decode(dst, []byte(test.enc))
@@ -94,14 +93,16 @@ var errTests = []struct {
 	err error
 }{
 	{"", "", nil},
-	{"0", "", ErrLength},
+	{"A", "", ErrLength},
 	{"zd4aa", "", InvalidByteError('z')},
-	{"d4aaz", "\xd4\xaa", InvalidByteError('z')},
-	{"30313", "01", ErrLength},
-	{"0g", "", InvalidByteError('g')},
-	{"00gg", "\x00", InvalidByteError('g')},
-	{"0\x01", "", InvalidByteError('\x01')},
-	{"ffeed", "\xff\xee", ErrLength},
+	{"urnn", "\xdb\xaa", nil},
+	{"urnnx", "\xdb\xaa", InvalidByteError('x')},
+	{"DADBb", "01", ErrLength},
+	{"0g", "", InvalidByteError('0')},
+	{"aa00", "\x00", InvalidByteError('0')},
+	{"a\x01", "", InvalidByteError('\x01')},
+	{"yywwd", "\xff\xee", ErrLength},
+	{"ffeed", "UD", ErrLength},
 }
 
 func TestDecodeErr(t *testing.T) {
@@ -109,7 +110,7 @@ func TestDecodeErr(t *testing.T) {
 		out := make([]byte, len(tt.in)+10)
 		n, err := Decode(out, []byte(tt.in))
 		if string(out[:n]) != tt.out || err != tt.err {
-			t.Errorf("Decode(%q) = %q, %v, want %q, %v", tt.in, string(out[:n]), err, tt.out, tt.err)
+			t.Errorf("Decode(%q) =\n      [%q, %v],\n want [%q, %v]", tt.in, string(out[:n]), err, tt.out, tt.err)
 		}
 	}
 }
@@ -118,7 +119,7 @@ func TestDecodeStringErr(t *testing.T) {
 	for _, tt := range errTests {
 		out, err := DecodeString(tt.in)
 		if string(out) != tt.out || err != tt.err {
-			t.Errorf("DecodeString(%q) = %q, %v, want %q, %v", tt.in, out, err, tt.out, tt.err)
+			t.Errorf("DecodeString(%q) =\n      [%q, %v],\n want [%q, %v]", tt.in, out, err, tt.out, tt.err)
 		}
 	}
 }
@@ -167,7 +168,7 @@ func TestDecoderErr(t *testing.T) {
 			wantErr = io.ErrUnexpectedEOF
 		}
 		if string(out) != tt.out || err != wantErr {
-			t.Errorf("NewDecoder(%q) = %q, %v, want %q, %v", tt.in, out, err, tt.out, wantErr)
+			t.Errorf("NewDecoder(%q) =\n      [%q, %v],\n want [%q, %v]", tt.in, out, err, tt.out, wantErr)
 		}
 	}
 }
@@ -207,8 +208,7 @@ func TestDumper_doubleclose(t *testing.T) {
 	dumper.Close()
 	dumper.Write([]byte(`gopher`))
 	dumper.Close()
-
-	expected := "00000000  67 6f 70 68 65 72                                 |gopher|\n"
+	expected := "AAAAAAAA  GH GY HA GK GF HC                                 |gopher|\n"
 	if out.String() != expected {
 		t.Fatalf("got:\n%#v\nwant:\n%#v", out.String(), expected)
 	}
@@ -239,9 +239,9 @@ func TestDump(t *testing.T) {
 	}
 }
 
-var expectedHexDump = []byte(`aaaaaaaa  Bw BY ca cB cc cD ce cF  cg cH ck cM cn cR ct cU  |.. !"#$%&'()*+,-|
-aaaaaaBa  cw cY Da DB Dc DD De DF  Dg DH Dk DM Dn DR Dt DU  |./0123456789:;<=|
-aaaaaaca  Dw DY ea eB ec eD ee eF                           |>?@ABCDE|
+var expectedHexDump = []byte(`AAAAAAAA  BW BY CA CB CC CD CE CF  CG CH CK CM CN CR CT CU  |.. !"#$%&'()*+,-|
+AAAAAABA  CW CY DA DB DC DD DE DF  DG DH DK DM DN DR DT DU  |./0123456789:;<=|
+AAAAAACA  DW DY EA EB EC ED EE EF                           |>?@ABCDE|
 `)
 
 var sink []byte
