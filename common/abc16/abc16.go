@@ -62,6 +62,20 @@ func Encode(dst, src []byte) int {
 	return len(src) * 2
 }
 
+// Encode encodes src into EncodedLen(len(src)), using alternating caps encoding
+// bytes of dst. As a convenience, it returns the number
+// of bytes written to dst, but this value is always EncodedLen(len(src)).
+// Encode implements abc16 encoding.
+func EncodeAlt(dst, src []byte) int {
+	j := 0
+	for _, v := range src {
+		dst[j] = encodeAlt[v>>4]
+		dst[j+1] = encodeAlt[v&0x0f]
+		j += 2
+	}
+	return len(src) * 2
+}
+
 // ErrLength reports an attempt to decode an odd-length input
 // using Decode or DecodeString.
 // The stream-based Decoder returns io.ErrUnexpectedEOF instead of ErrLength.
@@ -130,6 +144,13 @@ func fromHexChar(c []byte) (byte, bool) {
 func EncodeToString(src []byte) string {
 	dst := make([]byte, EncodedLen(len(src)))
 	Encode(dst, src)
+	return string(dst)
+}
+
+// EncodeToString returns the hexadecimal encoding of src.
+func EncodeToStringAlt(src []byte) string {
+	dst := make([]byte, EncodedLen(len(src)))
+	EncodeAlt(dst, src)
 	return string(dst)
 }
 

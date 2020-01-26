@@ -23,6 +23,15 @@ var encDecTests = []encDecTest{
 	{"GH", []byte{'g'}},
 	{"WDNB", []byte{0xe3, 0xa1}},
 }
+var encDecAltTests = []encDecTest{
+	{"", []byte{}},
+	{"aaaBacaDaeaFagaH", []byte{0, 1, 2, 3, 4, 5, 6, 7}},
+	{"akaManaRataUawaY", []byte{8, 9, 10, 11, 12, 13, 14, 15}},
+	{"YaYBYcYDYeYFYgYH", []byte{0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7}},
+	{"YkYMYnYRYtYUYwYY", []byte{0xf8, 0xf9, 0xfa, 0xfb, 0xfc, 0xfd, 0xfe, 0xff}},
+	{"gH", []byte{'g'}},
+	{"wDnB", []byte{0xe3, 0xa1}},
+}
 
 func TestFromHexChar(t *testing.T) {
 	for i, test := range encDecTests {
@@ -73,9 +82,29 @@ func TestEncodeToString(t *testing.T) {
 		}
 	}
 }
+func TestEncodeToStringAlt(t *testing.T) {
+	for i, test := range encDecAltTests {
+		s := EncodeToStringAlt(test.dec)
+		if s != test.enc {
+			t.Errorf("#%d got:%s want:%s", i, s, test.enc)
+		}
+	}
+}
 
 func TestDecodeString(t *testing.T) {
 	for i, test := range encDecTests {
+		dst, err := DecodeString(test.enc)
+		if err != nil {
+			t.Errorf("#%d: unexpected err value: %s", i, err)
+			continue
+		}
+		if !bytes.Equal(dst, test.dec) {
+			t.Errorf("#%d: got: %#v want: #%v", i, dst, test.dec)
+		}
+	}
+}
+func TestDecodeStringAlt(t *testing.T) {
+	for i, test := range encDecAltTests {
 		dst, err := DecodeString(test.enc)
 		if err != nil {
 			t.Errorf("#%d: unexpected err value: %s", i, err)
