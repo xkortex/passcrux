@@ -56,8 +56,7 @@ var combineCmd = &cobra.Command{
 		useStdin, _ := cmd.Flags().GetBool("stdin")
 		vprint.Print("useStdin", useStdin, "\n")
 
-		formattings := common.FormatSettings{}
-		err := common.ParseFormatSettings(&formattings, cmd)
+		formattings, err := common.ParseFormatSettings(cmd)
 		vprint.Print("Formattings (err): \n", formattings, "(", err, ")\n")
 		common.LogIfFatal(err)
 		shards, err := get_shards(args, useStdin)

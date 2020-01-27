@@ -32,6 +32,7 @@ var demoCmd = &cobra.Command{
 		fmt.Println(shards)
 		settings := common.FormatSettings{
 			common.EncodeBase32,
+			"",
 		}
 		out, err := common.FormatShards(shards, settings)
 		fmt.Println(out)

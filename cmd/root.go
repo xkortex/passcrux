@@ -48,7 +48,8 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	RootCmd.PersistentFlags().BoolP("silent", "s", false, "Suppress errors")
-	RootCmd.PersistentFlags().BoolP("stdin", "p", false, "Read from standard in (pipe)")
+	RootCmd.PersistentFlags().BoolP("stdin", "n", false, "Read from standard in (pipe)")
+	RootCmd.PersistentFlags().BoolP("pass", "p", false, "Read key/password from standard in prompt")
 	RootCmd.PersistentFlags().BoolP("dummy", "d", false, "Testing")
 	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
 
