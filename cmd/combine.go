@@ -29,9 +29,18 @@ func get_shards(args []string, useStdin bool) ([]string, error) {
 		if stdin_struct.Has_stdin {
 			temp := strings.Trim(stdin_struct.Stdin, " \n ,")
 			temp = strings.Replace(temp, " ", "\n", -1)
+			temp = strings.Replace(temp, "\r\n", "\n", -1)
+			temp = strings.Replace(temp, "\r", "\n", -1)
 			outs := strings.Split(temp, "\n")
-			vprint.Print(outs, "\n")
-			return outs, nil
+			outs2 := make([]string, 0)
+			for _, out := range outs {
+				if len(out) > 0 {
+					vprint.Printf("[%s] %d\n", out, len(out))
+					outs2 = append(outs2, out)
+				}
+			}
+			vprint.Print(outs2)
+			return outs2, nil
 		} else {
 			return nil, fmt.Errorf("Stdin flag `--` set, but was not able to detect stdin")
 		}
@@ -56,8 +65,7 @@ var combineCmd = &cobra.Command{
 		useStdin, _ := cmd.Flags().GetBool("stdin")
 		vprint.Print("useStdin", useStdin, "\n")
 
-		formattings := common.FormatSettings{}
-		err := common.ParseFormatSettings(&formattings, cmd)
+		formattings, err := common.ParseFormatSettings(cmd)
 		vprint.Print("Formattings (err): \n", formattings, "(", err, ")\n")
 		common.LogIfFatal(err)
 		shards, err := get_shards(args, useStdin)

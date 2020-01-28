@@ -18,7 +18,7 @@ import (
 
 // Get the password/phrase/key from input
 // todo: deal with extra character trim issue
-func get_password(args []string, useStdin bool, useRaw bool) (string, error) {
+func get_password(args []string, useStdin bool, useRaw bool, usePass bool) (string, error) {
 	stdin_struct, err := common.Get_stdin()
 	if err != nil {
 		return "", err
@@ -37,6 +37,11 @@ func get_password(args []string, useStdin bool, useRaw bool) (string, error) {
 			_, _ = fmt.Fprint(os.Stderr, "Warning: stdin pipe detected, but arguments passed. Ignoring arguments and using stdin\n")
 		}
 		temp = stdin_struct.Stdin
+	} else if usePass {
+		temp, err = common.ReadPassword()
+		if err != nil {
+			return "", err
+		}
 	} else if len(args) > 0 {
 		if len(args) > 1 {
 			_, _ = fmt.Fprint(os.Stderr, "Warning: More than one argument detected. Ignoring all but first. Use stdin pipe if you want breaks in your data\n")
@@ -100,8 +105,9 @@ Ratio is "M/N"
 		vprint.Print("Run subcmd: split\n")
 
 		useStdin, _ := cmd.Flags().GetBool("stdin")
+		usePass, _ := cmd.Flags().GetBool("pass")
 		vprint.Print("useStdin: ", useStdin, "\n")
-		pass, err := get_password(args, useStdin, false)
+		pass, err := get_password(args, useStdin, false, usePass)
 		common.LogIfFatal(err)
 		splittings := common.SplitSettings{}
 		err = ParseSplitSettings(&splittings, cmd)
@@ -115,9 +121,8 @@ Ratio is "M/N"
 		common.LogIfFatal(err)
 		vprint.Printf("Len of each shard in bytes: %d\n", len(shards[0]))
 		vprint.Print("Output:\n")
-		settings := common.FormatSettings{
-			common.EncodeHex,
-		}
+		settings, err := common.ParseFormatSettings(cmd)
+		common.LogIfFatal(err)
 		out, err := common.FormatShards(shards, settings)
 		fmt.Println(out)
 

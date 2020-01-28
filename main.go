@@ -11,9 +11,13 @@ PassCrux uses SSS wholesale without any modification.
 package main
 
 import (
-  "github.com/xkortex/passcrux/cmd"
+	"github.com/xkortex/passcrux/cmd"
 )
 
+var Version = "dev"
+
 func main() {
-  cmd.Execute()
+	cmd.Version = Version // todo: need less hackish way of setting version
+
+	cmd.Execute()
 }
