@@ -29,6 +29,6 @@ script:
   - go build -o passcrux
   - ./passcrux -h
   - go test -race -v $(go list ./... )
-  - echo "travis" | ./passcrux split --ratio 3/5 --stdin | tail -3 | ./passcrux combine --stdin 
+  - echo "travis" | ./passcrux split --ratio 3/5 --stdin | tail -3 | ./passcrux combine --stdin
   - echo "travis" | ./passcrux split --ratio 3/5 -e abc --stdin | tail -3 | ./passcrux combine -e abc --stdin
-  - [[ "travis" == $(echo "travis" | ./passcrux split --ratio 3/5 -e abc --stdin | tail -3 | ./passcrux combine -e abc --stdin) ]]
+
