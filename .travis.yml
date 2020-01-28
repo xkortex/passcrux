@@ -26,4 +26,6 @@ script:
   - go get github.com/spf13/cobra
   - go get github.com/xkortex/vprint
   - go get golang.org/x/crypto/ssh/terminal
-  - go build
+  - go build -o passcrux
+  - ./passcrux -h
+  - go test -race -v $(go list ./... )
