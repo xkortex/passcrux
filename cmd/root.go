@@ -6,19 +6,34 @@ distributed with this file, You can obtain one at https://mozilla.org/MPL/2.0/.
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/xkortex/vprint"
 	"log"
 	"os"
 )
 
+var Version = "unset"
+
+func PrintVersionAndQuit() {
+	fmt.Println(Version)
+	os.Exit(0)
+}
+
 // RootCmd represents the root command
 var RootCmd = &cobra.Command{
 	Use:   "passcrux",
 	Short: "Utility for splitting passwords with Shamir's Secret Sharing",
-	Long:  `Takes a password and splits it`,
+	Long: `Utility for splitting passwords with Shamir's Secret Sharing. 
+Takes a password and splits it
+`,
 	Run: func(cmd *cobra.Command, args []string) {
-		vprint.Print("root called")
+		vprint.Printf("root called. passcrux %s\n", Version)
+		doVersion, _ := cmd.Flags().GetBool("version")
+		if doVersion {
+			PrintVersionAndQuit()
+
+		}
 
 		vprint.Print(args)
 		_ = cmd.Help()
@@ -51,9 +66,10 @@ func init() {
 	RootCmd.PersistentFlags().BoolP("stdin", "n", false, "Read from standard in (pipe)")
 	RootCmd.PersistentFlags().BoolP("pass", "p", false, "Read key/password from standard in prompt")
 	RootCmd.PersistentFlags().BoolP("dummy", "d", false, "Testing")
-	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
+	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, abc, ABC}")
 
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose tracing (in progress)")
+	RootCmd.PersistentFlags().BoolP("version", "V", false, "Print version and quit")
 	//RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
 
 }

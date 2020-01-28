@@ -1,16 +1,69 @@
 # passcrux
 PassCrux - never lose your soul again!
 
-If you are like me, you loathe single points of failure, *especially* when it comes to passwords, and *extra-especially* when it comes to "master" passwords which guard things like password managers. Some password managers have mechanism to reset your password, however ever password reset route is an increased attack surface. Plus, there is always the spectre of a password manager provider going under, or getting hacked, or whatever. I wanted a way to back up my "master" passwords under my own terms. 
+If you are like me, you loathe single points of failure, *especially* when it comes to passwords, 
+and *extra-especially* when it comes to "master" passwords which guard things like password managers. 
+Some password managers have mechanism to reset your password, however ever password reset route is an 
+increased attack surface. Plus, there is always the spectre of a password manager provider going under, 
+or getting hacked, or whatever. I wanted a way to back up my "master" passwords under my own terms. 
 
-PassCrux gets to the crux of this matter, and has only a transient resemblance to crux-sounding recovery schemes found in some magical literature ;). It works by separating your password - or any data - into shards, that you can do anything you want with, just provide M of the N shards and you can recover the original data. If you haven't been living in a cursed cave for the past two decades, you'll recognize this as [Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing) algo, which is indeed at the heart of this tool. It's basically a lightweight wrapper around SSS with built-in helpers and formatters. 
+PassCrux gets to the crux of this matter, and has only a transient resemblance to crux-sounding recovery 
+schemes found in some magical literature ;). It works by separating your password - or any data - into shards, 
+that you can do anything you want with, just provide M of the N shards and you can recover the original data. 
+If you haven't been living in a cursed cave for the past two decades, you'll recognize this as 
+[Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing) algo, which is indeed 
+at the heart of this tool. It's basically a lightweight wrapper around SSS with built-in helpers and formatters. 
+
+# Usage
+
+To split a password from a prompt, into 5 shards with 3 needed to reconstruct, enter 
+```bash
+passcrux split -r 3/5 -p 
+```
+
+Out:
+```bash
+a38f786f19680cb3
+c4f5a36d797e336d
+38519b5d42021620
+f3ab8d463e182893
+e4ea839978cc8eae
+```
+
+Copy (at least) 3 of the 5 output shards and paste into a file, `shards.txt`, one shard string per line. 
+
+`shards.txt`
+```bash
+a38f786f19680cb3
+38519b5d42021620
+e4ea839978cc8eae
+```
+
+Then run:
+```bash
+cat shards.txt | passcrux combine --stdin  
+```
+
+# Installation
+
+# Building
+Requires typical 
 
 ## todo
-- main IO commands
-- output formatter interface
-- config parsing
-- QR generator
-- QR parser?
+- [x] main IO commands
+- [x] primary encode formats: hex, base32, base64
+- [x] "abc" encoding
+- [ ] Stabilize pipe-in interface and flags
+- [ ] validate/ensure correct behavior with DOS-style carriage returns `\r and \r\n`
+- [ ] Travis / CI hooks
+- [ ] Dockerfile
+- [ ] standardize output formatter interface
+- [ ] config parsing
+- [ ] handling for raw bytes I/O
+
+Stretch goals:
+- [ ] QR generator
+- [ ] QR parser
 
 # License
 
