@@ -22,8 +22,8 @@ matrix:
 before_install: go get -u github.com/kyoh86/richgo
 
 script:
-  - richgo test -v ./...
+  - go get github.com/hashicorp/vault/shamir
+  - go get github.com/spf13/cobra
+  - go get github.com/xkortex/vprint
+  - go get golang.org/x/crypto/ssh/terminal
   - go build
-  - if [ -z $NOVET ]; then
-    diff -u <(echo -n) <(go vet . 2>&1 | grep -vE 'ExampleCommand|bash_completions.*Fprint');
-    fi
