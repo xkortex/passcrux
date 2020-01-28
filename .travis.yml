@@ -24,10 +24,11 @@ script:
   - go get github.com/spf13/cobra
   - go get github.com/xkortex/vprint
   - go get golang.org/x/crypto/ssh/terminal
-  - go build -o passcrux
-  - passcrux -h
+  - echo $PATH
+  - go build -o /tmp/passcrux
+  - /tmp/passcrux -h
   - go test -race -v $(go list ./... )
-  - echo "travis" | ./passcrux split --ratio 3/5 --stdin | tail -3 | ./passcrux combine --stdin
-  - echo "travis" | ./passcrux split --ratio 3/5 -e abc --stdin | tail -3 | ./passcrux combine -e abc --stdin
+  - echo "travis" | /tmp/passcrux split --ratio 3/5 --stdin | tail -3 | /tmp/passcrux combine --stdin
+  - echo "travis" | /tmp/passcrux split --ratio 3/5 -e abc --stdin | tail -3 | /tmp/passcrux combine -e abc --stdin
   - ./tests/end2end.sh
 
