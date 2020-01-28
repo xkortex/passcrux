@@ -25,10 +25,10 @@ script:
   - go get github.com/xkortex/vprint
   - go get golang.org/x/crypto/ssh/terminal
   - echo $PATH
-  - go build -o /tmp/passcrux
-  - /tmp/passcrux -h
+  - go build -o $GOPATH/bin/passcrux
+  - $GOPATH/bin/passcrux -h
   - go test -race -v $(go list ./... )
-  - echo "travis" | /tmp/passcrux split --ratio 3/5 --stdin | tail -3 | /tmp/passcrux combine --stdin
-  - echo "travis" | /tmp/passcrux split --ratio 3/5 -e abc --stdin | tail -3 | /tmp/passcrux combine -e abc --stdin
+  - echo "travis" | $GOPATH/bin/passcrux split --ratio 3/5 --stdin | tail -3 | $GOPATH/bin/passcrux combine --stdin
+  - echo "travis" | $GOPATH/bin/passcrux split --ratio 3/5 -e abc --stdin | tail -3 | $GOPATH/bin/passcrux combine -e abc --stdin
   - ./tests/end2end.sh
 
