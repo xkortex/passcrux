@@ -1,6 +1,10 @@
 # passcrux
 PassCrux - never lose your soul again!
 
+[![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master "Travis CI status")](https://travis-ci.com/xkortex/passcrux.svg?branch=master)
+[![GoDoc](https://godoc.org/github.com/xkortex/passcrux?status.svg)](https://godoc.org/github.com/xkortex/passcrux)
+[![Go Report Card](https://goreportcard.com/badge/github.com/xkortex/passcrux)](https://goreportcard.com/report/github.com/xkortex/passcrux)
+
 If you are like me, you loathe single points of failure, *especially* when it comes to passwords, 
 and *extra-especially* when it comes to "master" passwords which guard things like password managers. 
 Some password managers have mechanism to reset your password, however ever password reset route is an 
