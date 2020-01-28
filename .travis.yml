@@ -5,8 +5,6 @@ stages:
   - test
 
 go:
-  - 1.10.x
-  - 1.11.x
   - 1.12.x
   - 1.13.x
   - tip
@@ -27,8 +25,9 @@ script:
   - go get github.com/xkortex/vprint
   - go get golang.org/x/crypto/ssh/terminal
   - go build -o passcrux
-  - ./passcrux -h
+  - passcrux -h
   - go test -race -v $(go list ./... )
   - echo "travis" | ./passcrux split --ratio 3/5 --stdin | tail -3 | ./passcrux combine --stdin
   - echo "travis" | ./passcrux split --ratio 3/5 -e abc --stdin | tail -3 | ./passcrux combine -e abc --stdin
+  - ./tests/end2end.sh
 
