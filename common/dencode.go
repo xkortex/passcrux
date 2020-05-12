@@ -78,7 +78,7 @@ func FormatShards(shards [][]byte, settings FormatSettings) (string, error) {
 	for i, shard := range shards {
 		stringShards[i] = encodeToString(shard)
 	}
-	return strings.Join(stringShards, "\n"), nil
+	return strings.Join(stringShards, settings.RecordSep), nil
 }
 
 func DecodeShards(shardWords []string, settings FormatSettings) ([][]byte, error) {

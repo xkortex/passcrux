@@ -18,21 +18,14 @@ import (
 
 // Get the password/phrase/key from input
 // todo: deal with extra character trim issue
-func get_password(args []string, useStdin bool, useRaw bool, usePass bool) (string, error) {
+func getKeyData(args []string, useRaw bool, usePass bool) (string, error) {
 	stdin_struct, err := common.Get_stdin()
 	if err != nil {
 		return "", err
 	}
 	temp := ""
 	vprint.Print("args: ", args, "stdin: ", stdin_struct.Has_stdin, " ", stdin_struct.Stdin, "\n")
-	if stdin_struct.Has_stdin && !useStdin {
-		_, _ = fmt.Fprint(os.Stderr, "Warning: stdin pipe detected, but --stdin flag not set. This is currently untested behavior \n")
-		useStdin = true
-	}
-	if useStdin {
-		if !stdin_struct.Has_stdin {
-			return "", fmt.Errorf("Stdin flag `--` set, but was not able to detect stdin")
-		}
+	if stdin_struct.Has_stdin {
 		if len(args) > 1 {
 			_, _ = fmt.Fprint(os.Stderr, "Warning: stdin pipe detected, but arguments passed. Ignoring arguments and using stdin\n")
 		}
@@ -48,7 +41,7 @@ func get_password(args []string, useStdin bool, useRaw bool, usePass bool) (stri
 		}
 		temp = args[0]
 	} else {
-		return "", fmt.Errorf("Input error: Must have at least one argument, or --stdin piped in")
+		return "", fmt.Errorf("Input error: Must have at least one argument, or stdin piped in")
 	}
 
 	if temp == "" {
@@ -104,10 +97,8 @@ Ratio is "M/N"
 		var err error
 		vprint.Print("Run subcmd: split\n")
 
-		useStdin, _ := cmd.Flags().GetBool("stdin")
 		usePass, _ := cmd.Flags().GetBool("pass")
-		vprint.Print("useStdin: ", useStdin, "\n")
-		pass, err := get_password(args, useStdin, false, usePass)
+		pass, err := getKeyData(args, false, usePass)
 		common.LogIfFatal(err)
 		splittings := common.SplitSettings{}
 		err = ParseSplitSettings(&splittings, cmd)

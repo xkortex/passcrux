@@ -27,7 +27,7 @@ const (
 	EncodeHex    = "hex"
 	EncodeBase32 = "base32"
 	EncodeBase64 = "base64"
-	EncodeBase85 = "base85/**/"
+	EncodeBase85 = "base85"
 )
 
 type SplitSettings struct {
@@ -35,8 +35,10 @@ type SplitSettings struct {
 	Threshold int // number of shards required to reconstruct
 }
 type FormatSettings struct {
-	EncodingType string
-	Sep          string
+	EncodingType string // binary-to-string encoding, e.g. hex, base32
+	Sep          string // separator between bytes
+	RecordSep    string // separator between records/shards
+	FilenamePat  string // pattern (in typical sprintf notation) for filenames
 }
 
 type StdInContainer struct {
@@ -50,7 +52,7 @@ func LogIfFatal(err error) {
 	}
 }
 
-func ParseFormatSettings(cmd *cobra.Command) (FormatSettings, error) {
+func ParseFormatSettings(cmd *cobra.Command) (settings FormatSettings, err error) {
 	encodingArg, _ := cmd.Flags().GetString("enc")
 	vprint.Print("encodingArg: [", encodingArg, "]\n")
 	re := regexp.MustCompile(`[base]*(\d+)|(h)|(hex)|(x)|(r)aw|(abc)|(ABC)`)
@@ -78,16 +80,23 @@ func ParseFormatSettings(cmd *cobra.Command) (FormatSettings, error) {
 		"ABC": EncodeABC,
 	}[encodingParsed]
 
-	settings := FormatSettings{
-		"",
-		"",
-	}
 	if !ok {
 		return settings, fmt.Errorf("Not a valid value for param `enc`: %s", encodingArg)
 	}
-
 	settings.EncodingType = val
-	settings.Sep = ""
+	sep, err := cmd.Flags().GetString("sep")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse argument `sep`, defaulting to blank string")
+	} else {
+		settings.Sep = sep
+	}
+	recordSep, err := cmd.Flags().GetString("recordsep")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse argument `recordsep`, defaulting to newline")
+	} else {
+		settings.RecordSep = recordSep
+	}
+
 	return settings, nil
 }
 
@@ -108,6 +117,7 @@ func Get_stdin() (StdInContainer, error) {
 	reader := bufio.NewReader(os.Stdin)
 	var output []rune
 
+	// Deliberately block until EOF, streaming doesn't really make sense with this app
 	for {
 		input, _, err := reader.ReadRune()
 		if err != nil && err == io.EOF {
@@ -120,6 +130,7 @@ func Get_stdin() (StdInContainer, error) {
 	return out_struct, nil
 }
 
+// Read password from the terminal. Prompts user 2x for consistency.
 func ReadPassword() (string, error) {
 	fmt.Fprintf(os.Stderr, "\nNow, please type in the password: ")
 	password, err := terminal.ReadPassword(int(os.Stdin.Fd()))
