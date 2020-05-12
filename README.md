@@ -1,7 +1,7 @@
 # passcrux
 PassCrux - never lose your soul again!
 
-[![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master "Travis CI status")](https://travis-ci.com/xkortex/passcrux.svg?branch=master)
+[![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master)](https://travis-ci.com/xkortex/passcrux)
 [![GoDoc](https://godoc.org/github.com/xkortex/passcrux?status.svg)](https://godoc.org/github.com/xkortex/passcrux)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xkortex/passcrux)](https://goreportcard.com/report/github.com/xkortex/passcrux)
 
