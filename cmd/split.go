@@ -18,6 +18,7 @@ import (
 
 // Get the password/phrase/key from input
 // todo: deal with extra character trim issue
+// todo: figure out what I meant by "character trim issue"
 func getKeyData(args []string, useRaw bool, usePass bool) (string, error) {
 	stdin_struct, err := common.Get_stdin()
 	if err != nil {
@@ -53,20 +54,20 @@ func getKeyData(args []string, useRaw bool, usePass bool) (string, error) {
 	return temp, nil
 }
 
-func ParseSplitSettings(settings *common.SplitSettings, cmd *cobra.Command) error {
+func ParseSplitSettings(cmd *cobra.Command) (settings common.SplitSettings, err error) {
 	ratioArg, _ := cmd.Flags().GetString("ratio")
 	re := regexp.MustCompile(`(\d+)[/|:](\d+)`)
 	match := re.FindSubmatch([]byte(ratioArg))
 	if len(match) != 3 {
-		return fmt.Errorf("Unable to parse `ratio` argument: '%s'", ratioArg)
+		return settings, fmt.Errorf("Unable to parse `ratio` argument: '%s'", ratioArg)
 	}
 	a, err := strconv.ParseInt(string(match[1]), 10, 32)
 	if err != nil {
-		return err
+		return settings, err
 	}
 	b, err := strconv.ParseInt(string(match[2]), 10, 32)
 	if err != nil {
-		return err
+		return settings, err
 	}
 	vprint.Printf("a: %d b: %d\n", a, b)
 	var threshold, parts int64
@@ -79,11 +80,23 @@ func ParseSplitSettings(settings *common.SplitSettings, cmd *cobra.Command) erro
 	}
 
 	if threshold < 2 || parts < 2 || threshold > 256 || parts > 256 {
-		return fmt.Errorf("parts and threshold must be 2 < x < 256")
+		return settings, fmt.Errorf("parts and threshold must be 2 < x < 256")
 	}
 	settings.Parts = int(parts)
 	settings.Threshold = int(threshold)
-	return nil
+	return settings, nil
+}
+
+func PasscruxSplit(secret []byte, splitSettings common.SplitSettings, formatSettings common.FormatSettings) (string, error) {
+	vprint.Print("Splittings: \n  ", splitSettings, " : \n")
+
+	vprint.Printf("Len in bytes: %d\n", len(secret))
+	shards, err := shamir.Split(secret, splitSettings.Parts, splitSettings.Threshold)
+	common.LogIfFatal(err)
+	vprint.Printf("Len of each shard in bytes: %d\n", len(shards[0]))
+	vprint.Print("Output:\n")
+	stringShards := common.FormatShards(shards, formatSettings)
+	return strings.Join(stringShards, formatSettings.RecordSep), nil
 }
 
 var splitCmd = &cobra.Command{
@@ -98,25 +111,20 @@ Ratio is "M/N"
 		vprint.Print("Run subcmd: split\n")
 
 		usePass, _ := cmd.Flags().GetBool("pass")
-		pass, err := getKeyData(args, false, usePass)
+		splitSettings, err := ParseSplitSettings(cmd)
 		common.LogIfFatal(err)
-		splittings := common.SplitSettings{}
-		err = ParseSplitSettings(&splittings, cmd)
-		vprint.Print("Splittings: \n  ", splittings, " : ", err, "\n")
+		formatSettings, err := common.ParseFormatSettings(cmd)
 		common.LogIfFatal(err)
 
-		secret := []byte(pass)
-		vprint.Printf("Len in bytes: %d\n", len(secret))
-		vprint.Printf("Input: %s\n", pass)
-		shards, err := shamir.Split(secret, splittings.Parts, splittings.Threshold)
+		secretString, err := getKeyData(args, false, usePass)
 		common.LogIfFatal(err)
-		vprint.Printf("Len of each shard in bytes: %d\n", len(shards[0]))
-		vprint.Print("Output:\n")
-		settings, err := common.ParseFormatSettings(cmd)
+		vprint.Printf("Input: %s\n", secretString)
+
+		secret := []byte(secretString)
+		out, err := PasscruxSplit(secret, splitSettings, formatSettings)
 		common.LogIfFatal(err)
-		out, err := common.FormatShards(shards, settings)
+
 		fmt.Println(out)
-
 	},
 }
 

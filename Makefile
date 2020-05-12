@@ -1,11 +1,18 @@
 VERSION := $(shell git describe --always --dirty --tags)
 
+.PHONY: default get test all
 
 default: get
 	go build -i -ldflags="-X 'main.Version=${VERSION}'" -o ${GOPATH}/bin/passcrux
 
 get:
 	go get
+
+test: default
+	bash ./tests/end2end.sh
+
+fmt:
+	go fmt ./...
 
 static: get
 	CGO_ENABLED=0 go build -i -ldflags="-X 'main.Version=${VERSION}'" -o ${GOPATH}/bin/passcrux
