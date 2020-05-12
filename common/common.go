@@ -38,6 +38,7 @@ type FormatSettings struct {
 	EncodingType string // binary-to-string encoding, e.g. hex, base32
 	Sep          string // separator between bytes
 	RecordSep    string // separator between records/shards
+	FieldSize    int    // size of each field, eg 2-> DE:AD:BE:EF
 	FilenamePat  string // pattern (in typical sprintf notation) for filenames
 }
 
@@ -95,6 +96,13 @@ func ParseFormatSettings(cmd *cobra.Command) (settings FormatSettings, err error
 		fmt.Fprintf(os.Stderr, "Failed to parse argument `recordsep`, defaulting to newline")
 	} else {
 		settings.RecordSep = recordSep
+	}
+
+	fieldSize, err := cmd.Flags().GetInt("fieldsize")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to parse argument `fieldsize`, defaulting to 2")
+	} else {
+		settings.FieldSize = fieldSize
 	}
 
 	return settings, nil

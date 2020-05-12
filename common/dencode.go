@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/xkortex/passcrux/common/abc16"
+	"regexp"
 	"strings"
 )
 
@@ -69,16 +70,49 @@ func getDecoder(encodingType string) (func(src string) ([]byte, error), error) {
 	}
 }
 
-func FormatShards(shards [][]byte, settings FormatSettings) (string, error) {
+func Chunk(s string, chunkSize int) []string {
+	if chunkSize >= len(s) {
+		return []string{s}
+	}
+	var chunks []string
+	chunk := make([]rune, chunkSize)
+	length := 0
+	for _, r := range s {
+		chunk[length] = r
+		length++
+		if length == chunkSize {
+			chunks = append(chunks, string(chunk))
+			length = 0
+		}
+	}
+	if length > 0 {
+		chunks = append(chunks, string(chunk[:length]))
+	}
+	return chunks
+}
+
+// Remove the field separators from the shard
+func StripSep(s string, sep string) string {
+	// todo: infer separator
+	if sep == "" {
+		return s
+	}
+	reSep := regexp.MustCompile(sep)
+	return reSep.ReplaceAllString(s, "")
+}
+
+func FormatShards(shards [][]byte, settings FormatSettings) []string {
 	stringShards := make([]string, len(shards), len(shards))
 	encodeToString, err := getEncoder(settings.EncodingType)
 	if err != nil {
-		return "", err
+		LogIfFatal(err)
 	}
 	for i, shard := range shards {
-		stringShards[i] = encodeToString(shard)
+		stringShard := encodeToString(shard)
+		chunks := Chunk(stringShard, settings.FieldSize)
+		stringShards[i] = strings.Join(chunks, settings.Sep)
 	}
-	return strings.Join(stringShards, settings.RecordSep), nil
+	return stringShards
 }
 
 func DecodeShards(shardWords []string, settings FormatSettings) ([][]byte, error) {
@@ -89,7 +123,8 @@ func DecodeShards(shardWords []string, settings FormatSettings) ([][]byte, error
 		return nil, err
 	}
 	for i, shard := range shardWords {
-		shardByte, err := decodeToString(shard)
+		shardClean := StripSep(shard, settings.Sep)
+		shardByte, err := decodeToString(shardClean)
 		if err != nil {
 			return nil, err
 		}

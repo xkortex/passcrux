@@ -1,24 +1,25 @@
 # passcrux
-PassCrux - never lose your soul again!
+PassCrux - Immortalize your master password!
 
-[![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master "Travis CI status")](https://travis-ci.com/xkortex/passcrux.svg?branch=master)
+[![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master)](https://travis-ci.com/xkortex/passcrux)
 [![GoDoc](https://godoc.org/github.com/xkortex/passcrux?status.svg)](https://godoc.org/github.com/xkortex/passcrux)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xkortex/passcrux)](https://goreportcard.com/report/github.com/xkortex/passcrux)
 
 If you are like me, you loathe single points of failure, *especially* when it comes to passwords, 
-and *extra-especially* when it comes to "master" passwords which guard things like password managers. 
-Some password managers have mechanism to reset your password, however ever password reset route is an 
+and **extra-especially** when it comes to "master" passwords which guard things like password managers. 
+Some password managers have mechanisms to reset your password, however every password reset-function is an 
 increased attack surface. Plus, there is always the spectre of a password manager provider going under, 
 or getting hacked, or whatever. I wanted a way to back up my "master" passwords under my own terms. 
 
 PassCrux gets to the crux of this matter, and has only a transient resemblance to crux-sounding recovery 
 schemes found in some magical literature ;). It works by separating your password - or any data - into shards, 
-that you can do anything you want with, just provide M of the N shards and you can recover the original data. 
+that you can do anything you want with. Just provide `M` of the `N` shards and you can recover the original data. 
 If you haven't been living in a cursed cave for the past two decades, you'll recognize this as 
-[Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing) algo, which is indeed 
-at the heart of this tool. It's basically a lightweight wrapper around SSS with built-in helpers and formatters. 
+[Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing) algorithm, which is indeed 
+at the heart of this tool. It's basically a lightweight wrapper around SSS, with built-in helpers and formatters
+for storing the shards in human-readable format. 
 
-# Testimonials 
+## Testimonials 
 
 > Heck, that sounds so fun! I can't wait to lose my master password!
  -- [aeksco](https://github.com/aeksco)
@@ -27,11 +28,11 @@ at the heart of this tool. It's basically a lightweight wrapper around SSS with 
 > bosses, and you've got yourself a solid adventure.
  -- [erotemic](https://github.com/erotemic)
 
-# Usage
+## Usage
 
 To split a password from a prompt, into 5 shards with 3 needed to reconstruct, enter 
 ```bash
-passcrux split -r 3/5 -p 
+passcrux split --ratio 3/5 --prompt 
 ```
 
 Out:
@@ -43,6 +44,7 @@ f3ab8d463e182893
 e4ea839978cc8eae
 ```
 
+Now, distribute your shards. In this case, we are just going to dump them into a file for this demo. 
 Copy (at least) 3 of the 5 output shards and paste into a file, `shards.txt`, one shard string per line. 
 
 `shards.txt`
@@ -52,18 +54,26 @@ a38f786f19680cb3
 e4ea839978cc8eae
 ```
 
-Then run:
+Then run this command to print the secret:
 ```bash
-cat shards.txt | passcrux combine --stdin  
+cat shards.txt | passcrux combine
 ```
 
-# Building/Installation
+## What to do with shards?
+That's entirely up to you! Get creative with it! Here are some ideas to get your ideas churning:
+- Stamp them into metal. Hide them in various places. Make a good ol' fashioned pirate map 🏴‍☠️
+- Use `--enc abc` and mark the letters in your favorite books 📚
+- Convert hexadecimal values into notes and make some sweet guitar riffs 🎸
+- Give a copy to `M` trusted friends with instructions to delete your browser history 🗑️
+
+
+## Building/Installation
 
 #### Turbo-instant docker usage:
 
 ```docker run --rm -it xkortex/passcrux [OPTIONS]```
 
-Note: `-it` is required for `-p/--pass` (interactive password prompt) and `-v` for any file-I/O. 
+Note: `-it` is required for `-p/--prompt` (interactive password prompt) and `-v` for any file-I/O. 
 
 #### Conventional:
 
@@ -75,9 +85,11 @@ Requires a typical golang environment. Simply run `make` to compile `passcrux` t
 - [x] "abc" encoding
 - [x] Stabilize pipe-in interface and flags
 - [ ] validate/ensure correct behavior with DOS-style carriage returns `\r and \r\n`
+- [ ] test on windows
 - [x] Travis / CI hooks
 - [x] Dockerfile
 - [ ] standardize output formatter interface
+- [ ] goexpect for testing interactive password prompt
 - [ ] config parsing
 - [ ] handling for raw bytes I/O
 

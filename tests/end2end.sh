@@ -11,10 +11,13 @@ fi
 
 for key in x travis GOLANG 'h@rdp#4ssW0rd'; do
   for enc in hex abc b32 b64; do
-    if [[ "${key}" != $(echo "${key}" | $GOPATH/bin/passcrux split --ratio 3/5 -e "${enc}" | tail -3 | $GOPATH/bin/passcrux combine -e "${enc}" ) ]]; then
-      FAILED=1
-      errcho "Failed encoding test: ${enc}: [${key}]"
-    fi
+    for sepflag in '' '-s:' '-s-'; do
+      if [[ "${key}" != $(echo "${key}" | $GOPATH/bin/passcrux split --ratio 3/5 -e "${enc}" "${sepflag}" | tail -3 \
+          | $GOPATH/bin/passcrux combine -e "${enc}" "${sepflag}" ) ]]; then
+        FAILED=1
+        errcho "Failed encoding test: encoding: ${enc}, sep: [], key: [${key}]"
+      fi
+    done
   done
 done
 
