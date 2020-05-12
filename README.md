@@ -18,6 +18,15 @@ If you haven't been living in a cursed cave for the past two decades, you'll rec
 [Shamir's Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_Secret_Sharing) algo, which is indeed 
 at the heart of this tool. It's basically a lightweight wrapper around SSS with built-in helpers and formatters. 
 
+# Testimonials 
+
+> Heck, that sounds so fun! I can't wait to lose my master password!
+ -- [aeksco](https://github.com/aeksco)
+
+> That's a good way to setup a quest for someone 1000 years in the future. Put a few of those in temples guarded by 
+> bosses, and you've got yourself a solid adventure.
+ -- [erotemic](https://github.com/erotemic)
+
 # Usage
 
 To split a password from a prompt, into 5 shards with 3 needed to reconstruct, enter 
@@ -48,19 +57,26 @@ Then run:
 cat shards.txt | passcrux combine --stdin  
 ```
 
-# Installation
+# Building/Installation
 
-# Building
-Requires typical 
+#### Turbo-instant docker usage:
+
+```docker run --rm -it xkortex/passcrux [OPTIONS]```
+
+Note: `-it` is required for `-p/--pass` (interactive password prompt) and `-v` for any file-I/O. 
+
+#### Conventional:
+
+Requires a typical golang environment. Simply run `make` to compile `passcrux` to `$GOPATH/bin/passcrux`
 
 ## todo
 - [x] main IO commands
 - [x] primary encode formats: hex, base32, base64
 - [x] "abc" encoding
-- [ ] Stabilize pipe-in interface and flags
+- [x] Stabilize pipe-in interface and flags
 - [ ] validate/ensure correct behavior with DOS-style carriage returns `\r and \r\n`
-- [ ] Travis / CI hooks
-- [ ] Dockerfile
+- [x] Travis / CI hooks
+- [x] Dockerfile
 - [ ] standardize output formatter interface
 - [ ] config parsing
 - [ ] handling for raw bytes I/O

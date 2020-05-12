@@ -10,46 +10,37 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/xkortex/passcrux/common"
 	"github.com/xkortex/vprint"
-	"os"
 	"strings"
 )
 
 // Get encoded shards from either stdin or args
-func get_shards(args []string, useStdin bool) ([]string, error) {
+func get_shards(args []string) ([]string, error) {
 	stdin_struct, err := common.Get_stdin()
 	if err != nil {
 		return nil, err
 	}
 	vprint.Printf("Args %v, \n Stdin: >>>%s<<<\n", args, stdin_struct.Stdin)
 
-	if useStdin || stdin_struct.Has_stdin {
-		if !useStdin {
-			_, _ = fmt.Fprint(os.Stderr, "Warning: Stdin detected but --stdin flag not set. This may be undefined behavior \n")
-		}
-		if stdin_struct.Has_stdin {
-			temp := strings.Trim(stdin_struct.Stdin, " \n ,")
-			temp = strings.Replace(temp, " ", "\n", -1)
-			temp = strings.Replace(temp, "\r\n", "\n", -1)
-			temp = strings.Replace(temp, "\r", "\n", -1)
-			outs := strings.Split(temp, "\n")
-			outs2 := make([]string, 0)
-			for _, out := range outs {
-				if len(out) > 0 {
-					vprint.Printf("[%s] %d\n", out, len(out))
-					outs2 = append(outs2, out)
-				}
+	if stdin_struct.Has_stdin {
+		temp := strings.Trim(stdin_struct.Stdin, " \n ,")
+		temp = strings.Replace(temp, " ", "\n", -1)
+		temp = strings.Replace(temp, "\r\n", "\n", -1)
+		temp = strings.Replace(temp, "\r", "\n", -1)
+		outs := strings.Split(temp, "\n")
+		outs2 := make([]string, 0)
+		for _, out := range outs {
+			if len(out) > 0 {
+				vprint.Printf("[%s] %d\n", out, len(out))
+				outs2 = append(outs2, out)
 			}
-			vprint.Print(outs2)
-			return outs2, nil
-		} else {
-			return nil, fmt.Errorf("Stdin flag `--` set, but was not able to detect stdin")
 		}
+		return outs2, nil
 	}
 
 	if len(args) < 2 {
 		return nil, fmt.Errorf("Must have at least two arguments")
 	}
-	return args[1:], nil
+	return args, nil
 }
 
 var combineCmd = &cobra.Command{
@@ -62,13 +53,10 @@ var combineCmd = &cobra.Command{
 		vprint.Print("Run subcmd: combine\n")
 		vprint.Print(args)
 
-		useStdin, _ := cmd.Flags().GetBool("stdin")
-		vprint.Print("useStdin", useStdin, "\n")
-
 		formattings, err := common.ParseFormatSettings(cmd)
-		vprint.Print("Formattings (err): \n", formattings, "(", err, ")\n")
+		vprint.Println("Formattings (err): \n", formattings, "(", err, ")\n")
 		common.LogIfFatal(err)
-		shards, err := get_shards(args, useStdin)
+		shards, err := get_shards(args)
 		common.LogIfFatal(err)
 
 		parts, err := common.DecodeShards(shards, formattings)

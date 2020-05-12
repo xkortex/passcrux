@@ -13,7 +13,9 @@ import (
 	"os"
 )
 
-var Version = "unset"
+var (
+	Version = "unset"
+)
 
 func PrintVersionAndQuit() {
 	fmt.Println(Version)
@@ -62,15 +64,20 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	RootCmd.PersistentFlags().BoolP("silent", "s", false, "Suppress errors")
-	RootCmd.PersistentFlags().BoolP("stdin", "n", false, "Read from standard in (pipe)")
+	RootCmd.PersistentFlags().BoolP("silent", "S", false, "Suppress errors")
 	RootCmd.PersistentFlags().BoolP("pass", "p", false, "Read key/password from standard in prompt")
-	RootCmd.PersistentFlags().BoolP("dummy", "d", false, "Testing")
-	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, abc, ABC}")
+	RootCmd.PersistentFlags().BoolP("dummy", "D", false, "Testing")
 
+	// Formatting parameters
+	RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, abc, ABC}")
+	RootCmd.PersistentFlags().StringP("input", "i", "", "Input file to read (optional)")
+	RootCmd.PersistentFlags().StringP("sep", "s", "", "Separator between bytes/fields")
+	RootCmd.PersistentFlags().StringP("recordsep", "R", "\n", "Separator between records/shards")
+	RootCmd.PersistentFlags().IntP("fieldsize", "F", 2, "Number of bytes/characters per separated field")
+
+	// Runtime
 	RootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose tracing (in progress)")
 	RootCmd.PersistentFlags().BoolP("version", "V", false, "Print version and quit")
-	//RootCmd.PersistentFlags().StringP("enc", "e", "hex", "En/decoding format {[he]x, [base]32, [base]64, }")
 
 }
 

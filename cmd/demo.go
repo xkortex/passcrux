@@ -23,7 +23,7 @@ var demoCmd = &cobra.Command{
 		vprint.Print("demo")
 		pass := "hunter2"
 		secret := []byte(pass)
-		fmt.Printf("Input: %s\n", pass)
+		vprint.Printf("Input: %s\n", pass)
 		shards, err := shamir.Split(secret, 5, 3)
 		if err != nil {
 			log.Fatal(err)
@@ -31,8 +31,10 @@ var demoCmd = &cobra.Command{
 		fmt.Println("Output:")
 		fmt.Println(shards)
 		settings := common.FormatSettings{
-			common.EncodeBase32,
-			"",
+			EncodingType: common.EncodeBase32,
+			Sep:          "",
+			RecordSep:    "\n",
+			FilenamePat:  "",
 		}
 		out, err := common.FormatShards(shards, settings)
 		fmt.Println(out)
