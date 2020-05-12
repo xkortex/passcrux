@@ -65,7 +65,7 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	RootCmd.PersistentFlags().BoolP("silent", "S", false, "Suppress errors")
-	RootCmd.PersistentFlags().BoolP("pass", "p", false, "Read key/password from standard in prompt")
+	RootCmd.PersistentFlags().BoolP("prompt", "p", false, "Read key/password from standard in prompt")
 	RootCmd.PersistentFlags().BoolP("dummy", "D", false, "Testing")
 
 	// Formatting parameters

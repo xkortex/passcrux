@@ -110,13 +110,13 @@ Ratio is "M/N"
 		var err error
 		vprint.Print("Run subcmd: split\n")
 
-		usePass, _ := cmd.Flags().GetBool("pass")
+		usePrompt, _ := cmd.Flags().GetBool("prompt")
 		splitSettings, err := ParseSplitSettings(cmd)
 		common.LogIfFatal(err)
 		formatSettings, err := common.ParseFormatSettings(cmd)
 		common.LogIfFatal(err)
 
-		secretString, err := getKeyData(args, false, usePass)
+		secretString, err := getKeyData(args, false, usePrompt)
 		common.LogIfFatal(err)
 		vprint.Printf("Input: %s\n", secretString)
 
