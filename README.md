@@ -4,6 +4,7 @@ PassCrux - Immortalize your master password!
 [![Build Status](https://travis-ci.com/xkortex/passcrux.svg?branch=master)](https://travis-ci.com/xkortex/passcrux)
 [![GoDoc](https://godoc.org/github.com/xkortex/passcrux?status.svg)](https://godoc.org/github.com/xkortex/passcrux)
 [![Go Report Card](https://goreportcard.com/badge/github.com/xkortex/passcrux)](https://goreportcard.com/report/github.com/xkortex/passcrux)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fxkortex%2Fpasscrux.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fxkortex%2Fpasscrux?ref=badge_shield)
 
 If you are like me, you loathe single points of failure, *especially* when it comes to passwords, 
 and **extra-especially** when it comes to "master" passwords which guard things like password managers. 
@@ -110,3 +111,6 @@ The current implementation relies on [SSS](https://github.com/hashicorp/vault/tr
 IANAL and I *think* I am doing this correctly, but if something is in error, please open an Issue or PR to help rectify. Go makes it astoundingly easy to `go get` code and use it in your project, and if you ask me, if you are advertising your code as go-gettable on Github, your intent is to share, but it's not my call, so please clarify if I am in the wrong. 
 
 Thanks!
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fxkortex%2Fpasscrux.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fxkortex%2Fpasscrux?ref=badge_large)
