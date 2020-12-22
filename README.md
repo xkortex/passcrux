@@ -80,6 +80,24 @@ Note: `-it` is required for `-p/--prompt` (interactive password prompt) and `-v`
 
 Requires a typical golang environment. Simply run `make` to compile `passcrux` to `$GOPATH/bin/passcrux`
 
+# FAQ
+
+### What is the threat model exactly? 
+
+Fallibility and data loss, both digitally and mentally. Modern security practices encourage creating a security bottleneck, using random, unmemorable, high-strength passwords for day-to-day logins, and using some sort of vault or password manager to store those keys. However, you still need to secure the key/password for the manager. This means there is usually at least one Super Ultra Master Password To Rule Them All. You probably shouldn't just write it down, or save it in plain text on a drive, since that makes it trivial for an attacker to recover your entire vault. 
+
+I wanted a system that would allow me to securely back up these Master Passwords, but not in a way that relied on memorizing some sequence of tokens. Humans are generally bad at memorizing long sequences of tokens, even when allowing for the usual tricks (was it correct-staple-horse-battery or correct-horse-battery-staple? Or was it with underscores?). Furthermore, backups are usually not frequently accessed, increasing the risk of forgetting. I needed a mental model which a) provided redundancy and b) leveraged the types of things that humans *are* good at memorizing: meaningful locations and events. A real-world [memory palace/ method of loci](https://en.wikipedia.org/wiki/Method_of_loci). Much like That Guy Who Ought Not Have His Name Mentioned, Passcrux tokens can be tied to something (or someone) personally meaningful. I'm sure you remember where you had your first kiss, or got your first puppy, or your favorite book - maybe even favorite passage. Chosen wisely, these keypoints are very easy for you to recall or access, but extremely improbably for an attacker to recover. And it's 100% offline. 
+
+Passcrux also enables you to easily set up some sort of a trust, as a contingency for your accounts in case of an unexpected event that leaves you incapacitated. Work it into a scavenger hunt if you are the mischievous type. 
+
+### Does this have anything to do with "password horcruxing"?
+
+There is a neat blog post going around called [Double Blind Passwords (aka Horcruxing)](https://kaizoku.dev/double-blind-passwords-aka-horcruxing). This project is wholly unrelated. In fact, this method is actually the *opposite* goal of horcruxing (depending on your perspective). Horcruxes are a form of redundancy - That Bloke Who Won't Be Named For Copyright Reasons split his soul up, such that in the event of his death, he'd have some anchors back to the physical world, such that he could be reanimated from the future. Canon does not say the number of horcruxes requried, but the destruction of the diary shows there is some redundancy, and the plot points suggest that he is using a `1 of N` scheme. Phani Karan's technique of blinded passwords, while really neat, is fail-open: loss of the secret chunk results in data loss. 
+
+### How stable is this program? 
+
+I am aiming for extremely high stability, and so far has proven to be, however I make no guarantees. I wrote this foremost for myself, for use with very-long-term storage, where I may not have access to the same physical systems as I did when I wrote it. It needs to be easy to compile and unchanging with its functionality. I plan on vendoring SSS at some point, which should further mitigate against any changes. 
+
 ## todo
 - [x] main IO commands
 - [x] primary encode formats: hex, base32, base64
@@ -97,6 +115,7 @@ Requires a typical golang environment. Simply run `make` to compile `passcrux` t
 Stretch goals:
 - [ ] QR generator
 - [ ] QR parser
+- [ ] built-in error correcting codes
 
 # License
 
